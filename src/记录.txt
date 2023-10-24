@@ -1,0 +1,49 @@
+## 启动指令
+
+influxd.exe ^
+--bolt-path C:\Users\22783\Desktop\zgwit_software\influxdb\influxd.bolt ^
+--sqlite-path C:\Users\22783\Desktop\zgwit_software\influxdb\influxd.sqlte ^
+--engine-path C:\Users\22783\Desktop\zgwit_software\influxdb\data ^       
+--http-bind-address ":8086"
+
+mosquitto.exe ^
+--port 1883
+
+mongod.exe ^
+--dbpath ./data ^
+--port 27017
+
+## MongoDB配置
+
+# 创建账号
+mongo -port 8317
+use zgwit
+db.createUser({user: "zgwit", pwd: "8981409", roles: [
+		{ role: "readWrite", db: "zgwit"
+		}
+	]
+})
+db.createUser({user: "zgwit_readonly", pwd: "8981409", roles: [
+		{ role: "read", db: "zgwit"
+		}
+	]
+})
+
+# 修改密码
+mongo -port 8317 -u "zgwit" -p "8981409" --authenticationDatabase "zgwit"
+db.updateUser("zgwit",
+{pwd: "new_password"
+})
+
+
+
+
+#####################
+
+drive读取到数据，写入  attribute.write
+drive监听属性修改  attribute.read
+drive监听动作下发  action.read
+
+app监听事件发生  event.read
+
+
