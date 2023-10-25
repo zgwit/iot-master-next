@@ -73,6 +73,7 @@ func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON, tables
 func TableCreate(mongo *plugin.Mongo, database string, table any) (err error) {
 
 	_, err = mongo.InsertOne(database, table)
+
 	return
 }
 
