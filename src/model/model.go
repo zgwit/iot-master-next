@@ -41,7 +41,12 @@ type PageType struct {
 	Desc bool `form:"desc" bson:"desc" json:"desc"`
 }
 
-func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables []map[string]interface{}, err error) {
+func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON, tables any) (err error) {
+
+	return mongo.FindAll(database, filter, tables)
+}
+
+func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables []map[string]interface{}, err error) {
 
 	if err = mongo.FindAll(database, filter, &tables); err != nil {
 		return
@@ -61,11 +66,6 @@ func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables
 	return
 }
 
-func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON, tables any) (err error) {
-
-	return mongo.FindAll(database, filter, tables)
-}
-
 func TableCreate(mongo *plugin.Mongo, database string, table any) (err error) {
 
 	_, err = mongo.InsertOne(database, table)
@@ -80,6 +80,11 @@ func TableDelete(mongo *plugin.Mongo, database string, objectid primitive.Object
 	return
 }
 
+func TableFind(mongo *plugin.Mongo, database string, filter plugin.BSON, table any) (result bool) {
+
+	return mongo.FindOne(database, filter, table) == nil
+}
+
 func TableExist(mongo *plugin.Mongo, database string, filter plugin.BSON) (table map[string]interface{}, result bool) {
 
 	result = mongo.FindOne(database, filter, &table) == nil
@@ -90,11 +95,6 @@ func TableExist(mongo *plugin.Mongo, database string, filter plugin.BSON) (table
 	}
 
 	return
-}
-
-func TableFind(mongo *plugin.Mongo, database string, filter plugin.BSON, table any) (result bool) {
-
-	return mongo.FindOne(database, filter, table) == nil
 }
 
 func TableUpdate(mongo *plugin.Mongo, database string, objectid primitive.ObjectID, option plugin.BSON) (err error) {
