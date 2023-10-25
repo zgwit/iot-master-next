@@ -1,8 +1,6 @@
 package model
 
 import (
-	"log"
-
 	"github.com/zgwit/iot-master-next/src/plugin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -46,7 +44,7 @@ type PageType struct {
 func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables []map[string]interface{}, err error) {
 
 	if err = mongo.FindAll(database, filter, &tables); err != nil {
-		log.Println("[FetchList]", err)
+		return
 	}
 
 	if len(tables) == 0 {
@@ -66,7 +64,7 @@ func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables
 func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON, tables any) (err error) {
 
 	if err = mongo.FindAll(database, filter, tables); err != nil {
-		log.Println("[FetchList]", err)
+		return
 	}
 
 	return
@@ -74,18 +72,13 @@ func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON, tables
 
 func TableCreate(mongo *plugin.Mongo, database string, table any) (err error) {
 
-	if _, err = mongo.InsertOne(database, table); err != nil {
-		log.Println("[TableCreate]", err)
-	}
-
+	_, err = mongo.InsertOne(database, table)
 	return
 }
 
 func TableDelete(mongo *plugin.Mongo, database string, objectid primitive.ObjectID) (err error) {
 
-	if _, err = mongo.DeleteOne(database, plugin.BSON{"_id": objectid}); err != nil {
-		log.Println("[device Delete]", err)
-	}
+	_, err = mongo.DeleteOne(database, plugin.BSON{"_id": objectid})
 
 	return
 }
