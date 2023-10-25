@@ -63,11 +63,7 @@ func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables
 
 func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON, tables any) (err error) {
 
-	if err = mongo.FindAll(database, filter, tables); err != nil {
-		return
-	}
-
-	return
+	return mongo.FindAll(database, filter, tables)
 }
 
 func TableCreate(mongo *plugin.Mongo, database string, table any) (err error) {
