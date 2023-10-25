@@ -1,5 +1,12 @@
 package model
 
+import (
+	"log"
+
+	"github.com/zgwit/iot-master-next/src/plugin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type KeyValueType map[string]interface{}
 type KeyValueStringType map[string]string
 type KeyValueNumberType map[string]int64
@@ -34,4 +41,81 @@ type PageType struct {
 	Offset int64 `form:"offset" bson:"offset" json:"offset"`
 
 	Desc bool `form:"desc" bson:"desc" json:"desc"`
+}
+
+func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON) (tables []map[string]interface{}, err error) {
+
+	if err = mongo.FindAll(database, filter, &tables); err != nil {
+		log.Println("[FetchList]", err)
+	}
+
+	if len(tables) == 0 {
+		tables = []map[string]interface{}{}
+	}
+
+	for index := range tables {
+		if value, exist := tables[index]["_id"]; exist {
+			tables[index]["objectid"] = value
+			delete(tables[index], "_id")
+		}
+	}
+
+	return
+}
+
+func FetchList2(mongo *plugin.Mongo, database string, filter plugin.BSON, tables any) (err error) {
+
+	if err = mongo.FindAll(database, filter, tables); err != nil {
+		log.Println("[FetchList]", err)
+	}
+
+	return
+}
+
+func TableCreate(mongo *plugin.Mongo, database string, table any) (err error) {
+
+	if _, err = mongo.InsertOne(database, table); err != nil {
+		log.Println("[TableCreate]", err)
+	}
+
+	return
+}
+
+func TableDelete(mongo *plugin.Mongo, database string, objectid primitive.ObjectID) (err error) {
+
+	if _, err = mongo.DeleteOne(database, plugin.BSON{"_id": objectid}); err != nil {
+		log.Println("[device Delete]", err)
+	}
+
+	return
+}
+
+func TableExist(mongo *plugin.Mongo, database string, filter plugin.BSON) (table map[string]interface{}, result bool) {
+
+	result = mongo.FindOne(database, filter, &table) == nil
+
+	if value, exist := table["_id"]; exist {
+		table["objectid"] = value
+		delete(table, "_id")
+	}
+
+	return
+}
+
+func TableFind(mongo *plugin.Mongo, database string, filter plugin.BSON, table any) (result bool) {
+
+	return mongo.FindOne(database, filter, table) == nil
+}
+
+func TableUpdate(mongo *plugin.Mongo, database string, objectid primitive.ObjectID, option plugin.BSON) (err error) {
+
+	for key := range option {
+		if option[key] == nil {
+			delete(option, key)
+		}
+	}
+
+	_, err = mongo.UpdateOne(database, plugin.BSON{"_id": objectid}, plugin.BSON{"$set": option})
+
+	return
 }
