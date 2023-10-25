@@ -41,7 +41,7 @@ type PageType struct {
 	Desc bool `form:"desc" bson:"desc" json:"desc"`
 }
 
-// 测试 - 2
+// 测试 -  2
 func FetchList(mongo *plugin.Mongo, database string, filter plugin.BSON, tables any) (err error) {
 
 	return mongo.FindAll(database, filter, tables)
