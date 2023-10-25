@@ -133,36 +133,38 @@ func GetDirsNames(dirName string) (names []string, err error) {
 }
 
 func GetDirsNames2(dirName string) (names []string, err error) {
+
 	var (
-		dirEntries = []fs.DirEntry{}
-		list       = map[int64]string{}
-		timestamps = []int64{}
+		folder    *os.File
+		fileInfos []fs.FileInfo
 	)
 
 	names = []string{}
 
-	if dirEntries, err = os.ReadDir(dirName); err != nil {
+	// 打开文件夹
+	if folder, err = os.Open(dirName); err != nil {
+		return
+	}
+	defer folder.Close()
+
+	if fileInfos, err = folder.Readdir(-1); err != nil {
 		return
 	}
 
-	for _, entry := range dirEntries {
-		if entry.IsDir() {
-			if info, err := entry.Info(); err == nil {
-				list[info.ModTime().Unix()] = entry.Name()
-			}
+	var files []os.FileInfo
+
+	for _, fileInfo := range fileInfos {
+		if fileInfo.IsDir() {
+			files = append(files, fileInfo)
 		}
 	}
 
-	for timestamp := range list {
-		timestamps = append(timestamps, timestamp)
-	}
-
-	sort.Slice(timestamps, func(i, j int) bool {
-		return timestamps[i] < timestamps[j]
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].ModTime().Before(files[j].ModTime())
 	})
 
-	for _, timestamp := range timestamps {
-		names = append(names, list[timestamp])
+	for _, fileInfo := range files {
+		names = append([]string{fileInfo.Name()}, names...)
 	}
 
 	return
@@ -188,36 +190,38 @@ func GetDirFileNames(dirName string) (names []string, err error) {
 }
 
 func GetDirFileNames2(dirName string) (names []string, err error) {
+
 	var (
-		dirEntries = []fs.DirEntry{}
-		list       = map[int64]string{}
-		timestamps = []int64{}
+		folder    *os.File
+		fileInfos []fs.FileInfo
 	)
 
 	names = []string{}
 
-	if dirEntries, err = os.ReadDir(dirName); err != nil {
+	// 打开文件夹
+	if folder, err = os.Open(dirName); err != nil {
+		return
+	}
+	defer folder.Close()
+
+	if fileInfos, err = folder.Readdir(-1); err != nil {
 		return
 	}
 
-	for _, entry := range dirEntries {
-		if !entry.IsDir() {
-			if info, err := entry.Info(); err == nil {
-				list[info.ModTime().Unix()] = entry.Name()
-			}
+	var files []os.FileInfo
+
+	for _, fileInfo := range fileInfos {
+		if !fileInfo.IsDir() {
+			files = append(files, fileInfo)
 		}
 	}
 
-	for timestamp := range list {
-		timestamps = append(timestamps, timestamp)
-	}
-
-	sort.Slice(timestamps, func(i, j int) bool {
-		return timestamps[i] < timestamps[j]
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].ModTime().Before(files[j].ModTime())
 	})
 
-	for _, timestamp := range timestamps {
-		names = append(names, list[timestamp])
+	for _, fileInfo := range files {
+		names = append([]string{fileInfo.Name()}, names...)
 	}
 
 	return

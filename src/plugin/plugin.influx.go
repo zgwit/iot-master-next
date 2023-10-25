@@ -31,9 +31,16 @@ func NewInflux(config InfluxConfig) (influx Influx) {
 	return
 }
 
-func (influx *Influx) Ping() (result bool, err error) {
+func (influx *Influx) Ping(time_sec int) (result bool, err error) {
 
-	result, err = influx.Client.Ping(context.Background())
+	for timer := 0; timer < time_sec; timer++ {
+
+		if result, err = influx.Client.Ping(context.Background()); err == nil && result {
+			break
+		}
+
+		time.Sleep(time.Second)
+	}
 
 	return
 }

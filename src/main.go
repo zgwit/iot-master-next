@@ -31,7 +31,7 @@ var (
 	ctrler_device       ctrler.DeviceCtrler
 	ctrler_device_model ctrler.DeviceModelCtrler
 
-	info_disabled         = true
+	info_disabled         = false
 	info_ready_middleware = false
 )
 
@@ -94,7 +94,7 @@ func system_init() {
 
 	system_influx = plugin.NewInflux(influx_config)
 
-	if result, err := system_influx.Ping(); !result || err != nil {
+	if result, err := system_influx.Ping(30); !result || err != nil {
 		log.Println("system_init.influxdb.ping.error:", err)
 		system_fail()
 	}
@@ -265,16 +265,16 @@ func system_loop() {
 
 	for {
 
-		response, err := system_http_client.POST("device/model/create", plugin.HTTPQUERY{}, &model.DeviceModelType{
-			Name:      "test",
-			Id:        "model_test2",
-			KeepAlive: 32,
-		})
-		if err != nil {
-			fmt.Println("err", err)
-		}
+		// response, err := system_http_client.POST("device/model/create", plugin.HTTPQUERY{}, &model.DeviceModelType{
+		// 	Name:      "test",
+		// 	Id:        "model_test2",
+		// 	KeepAlive: 32,
+		// })
+		// if err != nil {
+		// 	fmt.Println("err", err)
+		// }
 
-		fmt.Println(utils.ToJson3(response))
+		// fmt.Println(utils.ToJson3(response))
 
 		time.Sleep(time.Second)
 	}

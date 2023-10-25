@@ -30,6 +30,8 @@ func ReadApplicationConfig(applications *[]ApplicationType) (err error) {
 
 	for _, label := range labels {
 
+		fmt.Println(label)
+
 		application := ApplicationType{}
 
 		if err = application.loading(label); err != nil {
