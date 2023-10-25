@@ -39,7 +39,7 @@ func (influx *Influx) Ping(time_sec int) (result bool, err error) {
 			break
 		}
 
-		time.Sleep(time.Second)
+		time.Sleep(1 * time.Second)
 	}
 
 	return

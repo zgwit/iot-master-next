@@ -141,7 +141,6 @@ func GetDirsNames2(dirName string) (names []string, err error) {
 
 	names = []string{}
 
-	// 打开文件夹
 	if folder, err = os.Open(dirName); err != nil {
 		return
 	}
