@@ -110,9 +110,29 @@ func TableUpdate(mongo *plugin.Mongo, database string, objectid primitive.Object
 	return
 }
 
+func TableUpdate2(mongo *plugin.Mongo, database string, filter plugin.BSON, option plugin.BSON) (err error) {
+
+	for key := range option {
+		if option[key] == nil {
+			delete(option, key)
+		}
+	}
+
+	_, err = mongo.UpdateOne(database, filter, plugin.BSON{"$set": option})
+
+	return
+}
+
 func TablePush(mongo *plugin.Mongo, database string, objectid primitive.ObjectID, key string, table any) (err error) {
 
 	_, err = mongo.UpdateOne(database, plugin.BSON{"_id": objectid}, plugin.BSON{"$push": plugin.BSON{key: table}})
+
+	return
+}
+
+func TablePull(mongo *plugin.Mongo, database string, objectid primitive.ObjectID, key string, table any) (err error) {
+
+	_, err = mongo.UpdateOne(database, plugin.BSON{"_id": objectid}, plugin.BSON{"$pull": plugin.BSON{key: table}})
 
 	return
 }
