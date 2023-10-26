@@ -110,3 +110,10 @@ func TableUpdate(mongo *plugin.Mongo, database string, objectid primitive.Object
 
 	return
 }
+
+func TablePush(mongo *plugin.Mongo, database string, objectid primitive.ObjectID, key string, table any) (err error) {
+
+	_, err = mongo.UpdateOne(database, plugin.BSON{"_id": objectid}, plugin.BSON{"$push": plugin.BSON{key: table}})
+
+	return
+}
