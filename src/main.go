@@ -22,7 +22,6 @@ var (
 	system_influx      plugin.Influx
 	system_nsq_client  plugin.NsqClient
 	system_nsq_server  plugin.NsqServer
-	system_http_client plugin.HttpClient
 	system_http_server plugin.HttpServer
 
 	ctrler_Middleware   ctrler.MiddlewareCtrler
@@ -114,15 +113,6 @@ func system_init() {
 		system_fail()
 	}
 
-	var http_client_config plugin.HttpClientConfig
-
-	if err := utils.ReadFilekeyToObject("./config.txt", "http_client", &http_client_config); err != nil {
-		log.Println("system_init.http_server.config.error: ", err)
-		return
-	}
-
-	system_http_client = plugin.NewHttpClient(http_client_config)
-
 	var http_server_config plugin.HttpServerConfig
 
 	if err := utils.ReadFilekeyToObject("./config.txt", "http_server", &http_server_config); err != nil {
@@ -146,23 +136,28 @@ func system_init() {
 		APPLICATION := V1.Group("/application")
 		{
 			APPLICATION.GET("/list", ctrler_Application.List)
+			APPLICATION.GET("/status", ctrler_Application.Status)
+			APPLICATION.GET("/control", ctrler_Application.Control)
+			APPLICATION.POST("/update", ctrler_Application.Update)
+			APPLICATION.GET("/log", ctrler_Application.Log)
 		}
 
-		MODEL := V1.Group("/model")
+		DEVICE_MODEL := V1.Group("/device_model")
 		{
-			MODEL.GET("/list", ctrler_device_model.List)
-			MODEL.POST("/create", ctrler_device_model.Create)
-			MODEL.POST("/update", ctrler_device_model.Update)
-			MODEL.DELETE("/delete", ctrler_device_model.Delete)
-			MODEL.POST("/config", ctrler_device_model.Config)
+			DEVICE_MODEL.GET("/list", ctrler_device_model.List)
+			DEVICE_MODEL.POST("/create", ctrler_device_model.Create)
+			DEVICE_MODEL.POST("/update", ctrler_device_model.Update)
+			DEVICE_MODEL.DELETE("/delete", ctrler_device_model.Delete)
+			DEVICE_MODEL.POST("/config", ctrler_device_model.Config)
 		}
 
 		DEVICE := V1.Group("/device")
 		{
 			DEVICE.GET("/list", ctrler_device.List)
-			// DEVICE.POST("/create", ctrler_device.Create)
-			// DEVICE.POST("/update", ctrler_device.Update)
-			// DEVICE.DELETE("/delete", ctrler_device.Delete)
+			DEVICE.POST("/create", ctrler_device.Create)
+			DEVICE.POST("/update", ctrler_device.Update)
+			DEVICE.DELETE("/delete", ctrler_device.Delete)
+			DEVICE.POST("/config", ctrler_device.Config)
 
 			ATTRIBUTE := DEVICE.Group("/attribute")
 			{
@@ -211,8 +206,6 @@ func ctrler_init() {
 
 func system_info() {
 
-	wait_timer := 1
-
 	if info_disabled {
 		log.Println("successfully started.")
 	} else {
@@ -243,14 +236,7 @@ func system_info() {
 		info += model.ApplicationInfo(&system_applications, name_max_length)
 
 		if !info_ready_middleware {
-
-			if wait_timer < 6 {
-				wait_timer++
-			} else {
-				wait_timer = 1
-			}
-
-			info += fmt.Sprintf("\nwaiting for all the middleware to start%s\n", strings.Repeat(".", wait_timer))
+			info += fmt.Sprintf("\nwaiting for all the middleware to start%s\n", strings.Repeat(".", int(time.Now().Unix())%6+1))
 		}
 
 		cmd := exec.Command("cmd", "/c", "cls")
@@ -264,18 +250,6 @@ func system_info() {
 func system_loop() {
 
 	for {
-
-		// response, err := system_http_client.POST("device/model/create", plugin.HTTPQUERY{}, &model.DeviceModelType{
-		// 	Name:      "test",
-		// 	Id:        "model_test2",
-		// 	KeepAlive: 32,
-		// })
-		// if err != nil {
-		// 	fmt.Println("err", err)
-		// }
-
-		// fmt.Println(utils.ToJson3(response))
-
 		time.Sleep(time.Second)
 	}
 }

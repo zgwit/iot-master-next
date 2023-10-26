@@ -1,11 +1,5 @@
 package model
 
-import (
-	"strings"
-
-	"github.com/zgwit/iot-master-next/src/utils"
-)
-
 type DeviceModelType struct {
 	Name string `form:"name" bson:"name" json:"name"`
 	Id   string `form:"id" bson:"id" json:"id"`
@@ -33,51 +27,4 @@ type DeviceModelEventType struct {
 
 type DeviceModelActionType struct {
 	Name string `form:"name" bson:"name" json:"name"`
-}
-
-func ModelFetchList() (models []DeviceModelType, err error) {
-
-	var (
-		labels []string
-	)
-
-	models = []DeviceModelType{}
-
-	if labels, err = utils.GetDirFileNames2("./config/device.model"); err != nil {
-		return
-	}
-
-	for _, label := range labels {
-
-		label := strings.Replace(label, ".txt", "", -1)
-
-		model := DeviceModelType{}
-
-		if err = utils.ReadFileToObject("./config/device.model/"+label+".txt", &model); err != nil {
-			continue
-		}
-
-		models = append(models, model)
-	}
-
-	return
-}
-
-func ModelFind(model_id string, model *DeviceModelType) (err error) {
-
-	return utils.ReadFileToObject("./config/device.model/"+model_id+".txt", model)
-}
-
-func ModelExist(model_id string) (result bool) {
-
-	return utils.FileExist("./config/device.model/" + model_id + ".txt")
-}
-
-func (model DeviceModelType) Create() (err error) {
-
-	if err = utils.WriteObjectToFile2("./config/device.model/"+model.Id+".txt", &model); err != nil {
-		return
-	}
-
-	return
 }

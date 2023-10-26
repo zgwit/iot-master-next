@@ -86,7 +86,7 @@ func (ctrler *DataCtrler) AttributeRead(data_str string) {
 		attribute_write.Time = time.Now().Unix()
 	}
 
-	if err := model.ModelFind(attribute_write.ModelId, &device_model); err != nil {
+	if err := device_model_find(attribute_write.ModelId, &device_model); err != nil {
 		return
 	}
 
@@ -129,7 +129,7 @@ func (ctrler *DataCtrler) AttriableWrite() {
 
 		for model_id, model_data := range ctrler.history {
 
-			if err := model.ModelFind(model_id, &device_model); err != nil {
+			if err := device_model_find(model_id, &device_model); err != nil {
 				return
 			}
 
@@ -227,8 +227,7 @@ func (ctrler *DataCtrler) EventWrite(time int64, device_model *model.DeviceModel
 			continue
 		}
 
-		if err := ctrler.NsqClient.Publish("event.read", utils.ToJson2(event_write_pacakge)); err != nil {
-		}
+		ctrler.NsqClient.Publish("event.read", utils.ToJson2(event_write_pacakge))
 
 		if event_write_pacakge.Type == "continue" {
 			delete(event_realtime_datas[device_id], event_id)
@@ -251,7 +250,7 @@ func (ctrler *DataCtrler) EventRead(message string) {
 		return
 	}
 
-	if err := model.ModelFind(event_write_pacakge.ModelId, &device_model); err != nil {
+	if err := device_model_find(event_write_pacakge.ModelId, &device_model); err != nil {
 		return
 	}
 

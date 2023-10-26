@@ -328,6 +328,11 @@ func WriteObjectToFile2(filename string, object any) (err error) {
 	return
 }
 
+func RemoveFile(dirName string) (err error) {
+
+	return os.Remove(dirName)
+}
+
 func RemoveAll(dirName string) (err error) {
 
 	if err = os.RemoveAll(dirName); err != nil {
