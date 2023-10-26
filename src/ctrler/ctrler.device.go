@@ -56,6 +56,7 @@ func device_list(model_id *string, labels map[string]string) (devices []model.De
 			}
 		}
 
+		device.Id = device_id
 		devices = append(devices, device)
 	NEXT:
 	}
@@ -145,6 +146,29 @@ func (ctrler *DeviceCtrler) Create(ctx *gin.Context) {
 	plugin.HttpSuccess(ctx, "成功", nil)
 }
 
+func device_find(model_id string, table *model.DeviceType) (err error) {
+
+	return utils.ReadFileToObject("./config/device/"+model_id+".txt", table)
+}
+
+func (ctrler *DeviceCtrler) Find(ctx *gin.Context) {
+
+	device_id := ctx.Query("id")
+	table := model.DeviceType{}
+
+	if device_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, "编号为空")
+		return
+	}
+
+	if err := device_find(device_id, &table); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", table)
+}
+
 func device_delete(device_id string) (err error) {
 
 	return utils.RemoveFile("./config/device/" + device_id + ".txt")
@@ -152,7 +176,7 @@ func device_delete(device_id string) (err error) {
 
 func (ctrler *DeviceCtrler) Delete(ctx *gin.Context) {
 
-	device_id := ctx.Query("device_ids")
+	device_id := ctx.Query("id")
 
 	if device_id == "" {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, "编号为空")
@@ -165,11 +189,6 @@ func (ctrler *DeviceCtrler) Delete(ctx *gin.Context) {
 	}
 
 	plugin.HttpSuccess(ctx, "成功", nil)
-}
-
-func device_find(model_id string, table *model.DeviceType) (err error) {
-
-	return utils.ReadFileToObject("./config/device/"+model_id+".txt", table)
 }
 
 func (ctrler *DeviceCtrler) Update(ctx *gin.Context) {
@@ -189,10 +208,10 @@ func (ctrler *DeviceCtrler) Update(ctx *gin.Context) {
 		return
 	}
 
-	table.Drive = table_db.Drive
-	table.DriveConfig = table_db.DriveConfig
+	table_db.Name = table.Name
+	table_db.Labels = table.Labels
 
-	if err := device_write(&table); err != nil {
+	if err := device_write(&table_db); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}

@@ -27,25 +27,24 @@ func (ctrler *DeviceModelCtrler) Init(influx *plugin.Influx, nsq_client *plugin.
 func device_model_list() (models []model.DeviceModelType, err error) {
 
 	var (
-		labels []string
+		device_model_ids []string
 	)
 
 	models = []model.DeviceModelType{}
 
-	if labels, err = utils.GetDirFileNames2("./config/device.model"); err != nil {
+	if device_model_ids, err = utils.GetDirFileNames2("./config/device.model"); err != nil {
 		return
 	}
 
-	for _, label := range labels {
+	for _, device_model_id := range device_model_ids {
 
-		label := strings.Replace(label, ".txt", "", -1)
+		model := model.DeviceModelType{Id: strings.Replace(device_model_id, ".txt", "", -1)}
 
-		model := model.DeviceModelType{}
-
-		if err = utils.ReadFileToObject("./config/device.model/"+label+".txt", &model); err != nil {
+		if err = utils.ReadFileToObject("./config/device.model/"+device_model_id+".txt", &model); err != nil {
 			continue
 		}
 
+		model.Id = device_model_id
 		models = append(models, model)
 	}
 
@@ -154,6 +153,24 @@ func (ctrler *DeviceModelCtrler) Create(ctx *gin.Context) {
 func device_model_find(model_id string, table *model.DeviceModelType) (err error) {
 
 	return utils.ReadFileToObject("./config/device.model/"+model_id+".txt", table)
+}
+
+func (ctrler *DeviceModelCtrler) Find(ctx *gin.Context) {
+
+	device_id := ctx.Query("id")
+	table := model.DeviceModelType{}
+
+	if device_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, "编号为空")
+		return
+	}
+
+	if err := device_model_find(device_id, &table); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", table)
 }
 
 func (ctrler *DeviceModelCtrler) Update(ctx *gin.Context) {

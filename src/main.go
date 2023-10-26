@@ -30,7 +30,7 @@ var (
 	ctrler_device       ctrler.DeviceCtrler
 	ctrler_device_model ctrler.DeviceModelCtrler
 
-	info_disabled         = false
+	info_disabled         = true
 	info_ready_middleware = false
 )
 
@@ -146,6 +146,7 @@ func system_init() {
 		{
 			DEVICE_MODEL.GET("/list", ctrler_device_model.List)
 			DEVICE_MODEL.POST("/create", ctrler_device_model.Create)
+			DEVICE_MODEL.GET("/find", ctrler_device_model.Find)
 			DEVICE_MODEL.POST("/update", ctrler_device_model.Update)
 			DEVICE_MODEL.DELETE("/delete", ctrler_device_model.Delete)
 			DEVICE_MODEL.POST("/config", ctrler_device_model.Config)
@@ -155,6 +156,7 @@ func system_init() {
 		{
 			DEVICE.GET("/list", ctrler_device.List)
 			DEVICE.POST("/create", ctrler_device.Create)
+			DEVICE.GET("/find", ctrler_device.Find)
 			DEVICE.POST("/update", ctrler_device.Update)
 			DEVICE.DELETE("/delete", ctrler_device.Delete)
 			DEVICE.POST("/config", ctrler_device.Config)

@@ -62,3 +62,20 @@ func GetNumberBool(value bool) float64 {
 		return 0
 	}
 }
+
+func InterfaceToStruct(object interface{}, result interface{}) (err error) {
+
+	var (
+		str_byte []byte
+	)
+
+	if str_byte, err = json.Marshal(object); err != nil {
+		return
+	}
+
+	if err = json.Unmarshal(str_byte, result); err != nil {
+		return
+	}
+
+	return
+}
