@@ -162,7 +162,7 @@ func (ctrler *DeviceCtrler) Find(ctx *gin.Context) {
 	}
 
 	if err := device_find(device_id, &table); err != nil {
-		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		plugin.HttpFailure(ctx, "设备不存在", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}
 
