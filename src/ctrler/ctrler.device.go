@@ -102,7 +102,7 @@ func device_table(ctx *gin.Context, table *model.DeviceType) (result bool) {
 		table.Labels = map[string]string{}
 	}
 
-	if table.Name == "" || table.Id == "" || table.ModelId == "" || table.Drive == "" {
+	if table.Name == "" || table.Id == "" || table.ModelId == "" {
 		return
 	}
 
@@ -136,7 +136,7 @@ func (ctrler *DeviceCtrler) Create(ctx *gin.Context) {
 		return
 	}
 
-	table.DriveConfig = nil
+	table.Config = nil
 
 	if err := device_write(&table); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
@@ -237,7 +237,7 @@ func (ctrler *DeviceCtrler) Config(ctx *gin.Context) {
 		return
 	}
 
-	table_db.DriveConfig = table
+	table_db.Config = table
 
 	if err := device_write(&table_db); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)

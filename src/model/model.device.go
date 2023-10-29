@@ -7,6 +7,5 @@ type DeviceType struct {
 
 	Labels map[string]string `form:"labels" bson:"labels" json:"labels"`
 
-	Drive       string      `form:"drive" bson:"drive" json:"drive"`
-	DriveConfig interface{} `form:"drive_config" bson:"drive_config" json:"drive_config"`
+	Config interface{} `form:"config" bson:"config" json:"config"`
 }

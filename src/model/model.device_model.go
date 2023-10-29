@@ -11,8 +11,8 @@ type DeviceModelType struct {
 	KeepAlive int64  `form:"keep_alive" bson:"keep_alive" json:"keep_alive"`
 	Script    string `form:"script" bson:"script" json:"script"`
 
-	Drive       string      `form:"drive" bson:"drive" json:"drive"`
-	DriveConfig interface{} `form:"drive_config" bson:"drive_config" json:"drive_config"`
+	Drive  string      `form:"drive" bson:"drive" json:"drive"`
+	Config interface{} `form:"config" bson:"config" json:"config"`
 }
 
 type DeviceModelAttributeType struct {

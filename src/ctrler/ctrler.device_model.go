@@ -140,7 +140,7 @@ func (ctrler *DeviceModelCtrler) Create(ctx *gin.Context) {
 		return
 	}
 
-	table.DriveConfig = nil
+	table.Config = nil
 
 	if err := device_model_write(&table); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
@@ -191,7 +191,7 @@ func (ctrler *DeviceModelCtrler) Update(ctx *gin.Context) {
 	}
 
 	table.Drive = table_db.Drive
-	table.DriveConfig = table_db.DriveConfig
+	table.Config = table_db.Config
 
 	if err := device_model_write(&table); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
@@ -270,7 +270,7 @@ func (ctrler *DeviceModelCtrler) Config(ctx *gin.Context) {
 		return
 	}
 
-	table_db.DriveConfig = table
+	table_db.Config = table
 
 	if err := device_model_write(&table_db); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
