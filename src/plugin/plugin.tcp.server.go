@@ -90,6 +90,17 @@ func (tcp_server *TcpServer) Listen() (err error) {
 	return
 }
 
+func (tcp_server *TcpServer) Exist(clientid string) *TcpServerClient {
+
+	for _, server_client := range tcp_server.Clients {
+		if server_client.Clientid == clientid {
+			return server_client
+		}
+	}
+
+	return nil
+}
+
 func (tcp_server *TcpServer) Send(clientid string, message []byte) (length int, err error) {
 
 	for _, server_client := range tcp_server.Clients {
