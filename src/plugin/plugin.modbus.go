@@ -134,7 +134,7 @@ func byte_to_float32(bytes []byte) float32 {
 	return math.Float32frombits(bits)
 }
 
-func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian string, points *[]ModbusPoint) (err error) {
+func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian string, points map[string]*ModbusPoint) (err error) {
 
 	if len(result) < 6 || int(result[2]) != len(result)-5 || result[2]%2 != 0 {
 		err = errors.New("wrong format")
@@ -153,9 +153,9 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 		return
 	}
 
-	for index := range *points {
-		if (*points)[index].Function == function {
-			(*points)[index].value = nil
+	for _, point := range points {
+		if point.Function == function {
+			point.value = nil
 		}
 	}
 
@@ -167,12 +167,12 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 
 			for wei := 7; wei >= 0; wei-- {
 
-				for index := range *points {
+				for _, point := range points {
 
 					value := bool_to_float64(uint16(item&(0x01<<wei)) != 0)
 
-					if (*points)[index].Function == function || (*points)[index].Address == address {
-						(*points)[index].value = &value
+					if point.Function == function || point.Address == address {
+						point.value = &value
 					}
 				}
 
@@ -184,17 +184,17 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 
 		for wei := 0; wei < len(data_byte); wei += 2 {
 
-			for index := range *points {
+			for _, point := range points {
 
-				if (*points)[index].Function == function || (*points)[index].Address == address {
+				if point.Function == function || point.Address == address {
 
 					_data_byte := []byte{}
 
-					switch (*points)[index].DataType {
+					switch point.DataType {
 
 					case MODBUS_DT_BOOL, MODBUS_DT_UINT16, MODBUS_DT_INT16:
 
-						if index+1 > len(data_byte)-1 {
+						if wei+1 > len(data_byte)-1 {
 							continue
 						}
 
@@ -202,7 +202,7 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 
 					case MODBUS_DT_UINT32, MODBUS_DT_INT32, MODBUS_DT_FLOAT:
 
-						if index+3 > len(data_byte)-1 {
+						if wei+3 > len(data_byte)-1 {
 							continue
 						}
 
@@ -223,7 +223,7 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 
 					value := float64(0)
 
-					switch (*points)[index].DataType {
+					switch point.DataType {
 					case MODBUS_DT_BOOL:
 						value = bool_to_float64(_data_byte[1] != 0)
 					case MODBUS_DT_UINT16:
@@ -238,7 +238,7 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 						value = float64(byte_to_float32(_data_byte))
 					}
 
-					(*points)[index].value = &value
+					point.value = &value
 				}
 			}
 
