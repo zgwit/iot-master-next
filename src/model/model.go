@@ -33,7 +33,7 @@ type NameIdType struct {
 
 type NameValueType struct {
 	Name  string `form:"name" bson:"name" json:"name"`
-	Value bool   `form:"value" bson:"value" json:"value"`
+	Value string `form:"value" bson:"value" json:"value"`
 }
 
 type PageType struct {
