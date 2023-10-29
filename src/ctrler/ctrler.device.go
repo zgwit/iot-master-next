@@ -46,7 +46,7 @@ func device_list(model_id *string, labels map[string]string) (devices []model.De
 			continue
 		}
 
-		if device.ModelId != *model_id {
+		if model_id != nil && device.ModelId != *model_id {
 			continue
 		}
 
@@ -75,7 +75,7 @@ func (ctrler *DeviceCtrler) List(ctx *gin.Context) {
 		devices = []model.DeviceType{}
 	)
 
-	if id := ctx.Query("id"); id != "" {
+	if id := ctx.Query("model_id"); id != "" {
 		model_id = &id
 	}
 

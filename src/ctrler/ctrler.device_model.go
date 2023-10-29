@@ -24,7 +24,7 @@ func (ctrler *DeviceModelCtrler) Init(influx *plugin.Influx, nsq_client *plugin.
 	return
 }
 
-func device_model_list() (models []model.DeviceModelType, err error) {
+func device_model_list(drive *string) (models []model.DeviceModelType, err error) {
 
 	var (
 		device_model_ids []string
@@ -38,14 +38,18 @@ func device_model_list() (models []model.DeviceModelType, err error) {
 
 	for _, device_model_id := range device_model_ids {
 
-		model := model.DeviceModelType{Id: strings.Replace(device_model_id, ".txt", "", -1)}
+		device_model := model.DeviceModelType{Id: strings.Replace(device_model_id, ".txt", "", -1)}
 
-		if err = utils.ReadFileToObject("./config/device.model/"+device_model_id+".txt", &model); err != nil {
+		if err = utils.ReadFileToObject("./config/device.model/"+device_model_id+".txt", &device_model); err != nil {
 			continue
 		}
 
-		model.Id = device_model_id
-		models = append(models, model)
+		if drive != nil && device_model.Drive != *drive {
+			continue
+		}
+
+		device_model.Id = device_model_id
+		models = append(models, device_model)
 	}
 
 	return
@@ -56,10 +60,15 @@ func (ctrler *DeviceModelCtrler) List(ctx *gin.Context) {
 	var (
 		err error
 
+		drive         *string
 		device_models = []model.DeviceModelType{}
 	)
 
-	if device_models, err = device_model_list(); err != nil {
+	if id := ctx.Query("drive"); id != "" {
+		drive = &id
+	}
+
+	if device_models, err = device_model_list(drive); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}
