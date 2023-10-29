@@ -6,7 +6,7 @@ echo.
 echo --- --- --- --- --- compile.. --- --- --- --- --- ---
 echo.
 
-go build -o iot-master-pro.exe
+go build -o iot-master-next.exe
 
     if %errorlevel% neq 0 (
 
@@ -17,7 +17,7 @@ go build -o iot-master-pro.exe
     exit /b 1
 
 )
-move iot-master-pro.exe ..
+move iot-master-next.exe ..
 
 cd ..
 
@@ -25,7 +25,7 @@ echo.
 echo --- --- --- --- --- running --- --- --- --- --- ---
 echo.
 
-iot-master-pro.exe
+iot-master-next.exe
 
 echo.
 echo --- --- --- --- --- end --- --- --- --- --- ---

@@ -38,7 +38,9 @@ func device_model_list(drive *string) (models []model.DeviceModelType, err error
 
 	for _, device_model_id := range device_model_ids {
 
-		device_model := model.DeviceModelType{Id: strings.Replace(device_model_id, ".txt", "", -1)}
+		device_model_id = strings.Replace(device_model_id, ".txt", "", -1)
+
+		device_model := model.DeviceModelType{}
 
 		if err = utils.ReadFileToObject("./config/device.model/"+device_model_id+".txt", &device_model); err != nil {
 			continue
