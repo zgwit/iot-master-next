@@ -172,7 +172,16 @@ func (ctrler *DataCtrler) EventWrite(time int64, device_model *model.DeviceModel
 
 	for event_id, value := range events {
 
-		if _, exist := device_model.Events[event_id]; !exist {
+		exist := false
+
+		for index := range device_model.Events {
+			if device_model.Events[index].Id == event_id {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
 			delete(events, event_id)
 			continue
 		}

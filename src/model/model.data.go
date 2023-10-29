@@ -97,11 +97,19 @@ func (datas *DeviceAttributeHistoryType) Write(influx *plugin.Influx, model *Dev
 
 			fields := KeyValueType{}
 
-			for data_id, value_interface := range data {
+			for attribute_id, value_interface := range data {
 
-				attribute, exist := DeviceModelAttributeType{}, false
+				index, attribute := -1, DeviceModelAttributeType{}
 
-				if attribute, exist = model.Attributes[data_id]; !exist {
+				for idx := range model.Attributes {
+					if model.Attributes[idx].Id == attribute_id {
+						index = idx
+						attribute = model.Attributes[idx]
+						break
+					}
+				}
+
+				if index == -1 {
 					continue
 				}
 
@@ -112,19 +120,19 @@ func (datas *DeviceAttributeHistoryType) Write(influx *plugin.Influx, model *Dev
 				switch value := value_interface.(type) {
 				case float64:
 					if attribute.DataType == "number" {
-						fields[data_id] = value
+						fields[attribute_id] = value
 					}
 				case int64:
 					if attribute.DataType == "number" {
-						fields[data_id] = float64(value)
+						fields[attribute_id] = float64(value)
 					}
 				case string:
 					if attribute.DataType == "string" {
-						fields[data_id] = value
+						fields[attribute_id] = value
 					}
 				case bool:
 					if attribute.DataType == "number" {
-						fields[data_id] = utils.GetNumberBool(value)
+						fields[attribute_id] = utils.GetNumberBool(value)
 					}
 				}
 			}
@@ -256,7 +264,16 @@ func (datas *DeviceEventHistoryType) Write(influx *plugin.Influx, model *DeviceM
 
 			for event_id, end_time := range data {
 
-				if _, exist := model.Events[event_id]; !exist {
+				exist := false
+
+				for index := range model.Events {
+					if model.Events[index].Id == event_id {
+						exist = true
+						break
+					}
+				}
+
+				if !exist {
 					continue
 				}
 
@@ -384,14 +401,23 @@ func (datas *DeviceAttributeRealtimeType) Write(influx *plugin.Influx, model *De
 
 		fields := KeyValueType{}
 
-		for attriable_id, data := range attriable_data {
+		for attribute_id, data := range attriable_data {
 
-			if _, exist := model.Events[attriable_id]; !exist {
+			exist := false
+
+			for index := range model.Attributes {
+				if model.Attributes[index].Id == attribute_id {
+					exist = true
+					break
+				}
+			}
+
+			if !exist {
 				continue
 			}
 
 			if data_byte, err := json.Marshal(&data); err == nil {
-				fields[attriable_id] = string(data_byte)
+				fields[attribute_id] = string(data_byte)
 			}
 		}
 
@@ -486,13 +512,22 @@ func (datas *DeviceEventRealtimeType) Write(influx *plugin.Influx, model *Device
 		tags := map[string]string{":device_id": device_id}
 		fields := KeyValueType{}
 
-		for attriable_id, data := range attriable_data {
+		for event_id, data := range attriable_data {
 
-			if _, exist := model.Events[attriable_id]; !exist {
+			exist := false
+
+			for index := range model.Events {
+				if model.Events[index].Id == event_id {
+					exist = true
+					break
+				}
+			}
+
+			if !exist {
 				continue
 			}
 
-			fields[attriable_id] = data
+			fields[event_id] = data
 		}
 
 		batch.AddPoint(model.Id, tags, fields, 0)

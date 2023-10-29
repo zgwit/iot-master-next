@@ -85,15 +85,15 @@ func device_model_table(ctx *gin.Context, table *model.DeviceModelType) (result 
 	}
 
 	if len(table.Attributes) == 0 {
-		table.Attributes = map[string]model.DeviceModelAttributeType{}
+		table.Attributes = []model.DeviceModelAttributeType{}
 	}
 
 	if len(table.Events) == 0 {
-		table.Events = map[string]model.DeviceModelEventType{}
+		table.Events = []model.DeviceModelEventType{}
 	}
 
 	if len(table.Actions) == 0 {
-		table.Actions = map[string]model.DeviceModelActionType{}
+		table.Actions = []model.DeviceModelActionType{}
 	}
 
 	if table.Name == "" || table.Id == "" || table.Drive == "" {
@@ -246,7 +246,7 @@ func (ctrler *DeviceModelCtrler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if devices, err := device_list(&model_id, map[string]string{}); err != nil {
+	if devices, err := device_list(&model_id, []model.NameValueType{}); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 

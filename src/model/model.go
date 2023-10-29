@@ -31,6 +31,11 @@ type NameIdType struct {
 	Id   string `form:"id" bson:"id" json:"id"`
 }
 
+type NameValueType struct {
+	Name  string `form:"name" bson:"name" json:"name"`
+	Value bool   `form:"value" bson:"value" json:"value"`
+}
+
 type PageType struct {
 	Start int64 `form:"start" bson:"start" json:"start"`
 	Stop  int64 `form:"stop" bson:"stop" json:"stop"`

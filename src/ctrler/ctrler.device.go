@@ -24,7 +24,7 @@ func (ctrler *DeviceCtrler) Init(influx *plugin.Influx, nsq_client *plugin.NsqCl
 	return
 }
 
-func device_list(model_id *string, labels map[string]string) (devices []model.DeviceType, err error) {
+func device_list(model_id *string, labels []model.NameValueType) (devices []model.DeviceType, err error) {
 
 	var (
 		device_ids []string
@@ -50,9 +50,12 @@ func device_list(model_id *string, labels map[string]string) (devices []model.De
 			continue
 		}
 
-		for key := range labels {
-			if labels[key] != device.Labels[key] {
-				goto NEXT
+		for _, label_param := range labels {
+			for _, label_device := range device.Labels {
+
+				if label_param.Name == label_device.Name && label_param.Value != label_device.Value {
+					goto NEXT
+				}
 			}
 		}
 
@@ -70,7 +73,7 @@ func (ctrler *DeviceCtrler) List(ctx *gin.Context) {
 		err error
 
 		model_id *string
-		labels   map[string]string
+		labels   []model.NameValueType
 
 		devices = []model.DeviceType{}
 	)
@@ -99,7 +102,7 @@ func device_table(ctx *gin.Context, table *model.DeviceType) (result bool) {
 	}
 
 	if len(table.Labels) == 0 {
-		table.Labels = map[string]string{}
+		table.Labels = []model.NameValueType{}
 	}
 
 	if table.Name == "" || table.Id == "" || table.ModelId == "" {
