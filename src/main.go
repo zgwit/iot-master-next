@@ -150,6 +150,18 @@ func system_init() {
 			DEVICE_MODEL.POST("/update", ctrler_device_model.Update)
 			DEVICE_MODEL.DELETE("/delete", ctrler_device_model.Delete)
 			DEVICE_MODEL.POST("/config", ctrler_device_model.Config)
+
+			ATTRIBUTE := DEVICE_MODEL.Group("/attribute")
+			{
+				ATTRIBUTE.DELETE("/realtime/delete", ctrler_device_model.AttributeRealtimeDelete)
+				ATTRIBUTE.DELETE("/history/delete", ctrler_device_model.AttributeHistoryDelete)
+			}
+
+			EVENT := DEVICE_MODEL.Group("/event")
+			{
+				EVENT.DELETE("/realtime/delete", ctrler_device_model.EventRealtimeDelete)
+				EVENT.DELETE("/history/delete", ctrler_device_model.EventHistoryDelete)
+			}
 		}
 
 		DEVICE := V1.Group("/device")
@@ -165,12 +177,16 @@ func system_init() {
 			{
 				ATTRIBUTE.GET("/realtime", ctrler_device.AttributeRealtime)
 				ATTRIBUTE.GET("/history", ctrler_device.AttributeHistory)
+				ATTRIBUTE.DELETE("/realtime/delete", ctrler_device.AttributeRealtimeDelete)
+				ATTRIBUTE.DELETE("/history/delete", ctrler_device.AttributeHistoryDelete)
 			}
 
 			EVENT := DEVICE.Group("/event")
 			{
 				EVENT.GET("/realtime", ctrler_device.EventRealtime)
 				EVENT.GET("/history", ctrler_device.EventHistory)
+				EVENT.DELETE("/realtime/delete", ctrler_device.EventRealtimeDelete)
+				EVENT.DELETE("/history/delete", ctrler_device.EventHistoryDelete)
 			}
 		}
 	}

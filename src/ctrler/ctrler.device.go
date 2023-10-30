@@ -306,6 +306,40 @@ func (ctrler *DeviceCtrler) AttributeHistory(ctx *gin.Context) {
 	plugin.HttpSuccess(ctx, "成功", datas)
 }
 
+func (ctrler *DeviceCtrler) AttributeRealtimeDelete(ctx *gin.Context) {
+
+	model_id, device_id := ctx.Query("model_id"), ctx.Query("device_id")
+
+	if model_id == "" || device_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteDeviceAttributeRealtime(ctrler.Influx, model_id, device_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
+
+func (ctrler *DeviceCtrler) AttributeHistoryDelete(ctx *gin.Context) {
+
+	model_id, device_id := ctx.Query("model_id"), ctx.Query("device_id")
+
+	if model_id == "" || device_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteDeviceAttributeHistory(ctrler.Influx, model_id, device_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
+
 func (ctrler *DeviceCtrler) EventRealtime(ctx *gin.Context) {
 
 	var (
@@ -360,4 +394,38 @@ func (ctrler *DeviceCtrler) EventHistory(ctx *gin.Context) {
 	}
 
 	plugin.HttpSuccess(ctx, "成功", datas)
+}
+
+func (ctrler *DeviceCtrler) EventRealtimeDelete(ctx *gin.Context) {
+
+	model_id, device_id := ctx.Query("model_id"), ctx.Query("device_id")
+
+	if model_id == "" || device_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteDeviceEventRealtime(ctrler.Influx, model_id, device_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
+
+func (ctrler *DeviceCtrler) EventHistoryDelete(ctx *gin.Context) {
+
+	model_id, device_id := ctx.Query("model_id"), ctx.Query("device_id")
+
+	if model_id == "" || device_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteDeviceEventHistory(ctrler.Influx, model_id, device_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
 }

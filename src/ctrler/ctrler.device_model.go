@@ -290,3 +290,71 @@ func (ctrler *DeviceModelCtrler) Config(ctx *gin.Context) {
 
 	plugin.HttpSuccess(ctx, "成功", nil)
 }
+
+func (ctrler *DeviceModelCtrler) AttributeRealtimeDelete(ctx *gin.Context) {
+
+	model_id := ctx.Query("model_id")
+
+	if model_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteModelAttributeRealtime(ctrler.Influx, model_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
+
+func (ctrler *DeviceModelCtrler) AttributeHistoryDelete(ctx *gin.Context) {
+
+	model_id := ctx.Query("model_id")
+
+	if model_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteModelAttributeHistory(ctrler.Influx, model_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
+
+func (ctrler *DeviceModelCtrler) EventRealtimeDelete(ctx *gin.Context) {
+
+	model_id := ctx.Query("model_id")
+
+	if model_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteModelEventRealtime(ctrler.Influx, model_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
+
+func (ctrler *DeviceModelCtrler) EventHistoryDelete(ctx *gin.Context) {
+
+	model_id := ctx.Query("model_id")
+
+	if model_id == "" {
+		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
+		return
+	}
+
+	if err := model.DeleteModelEventHistory(ctrler.Influx, model_id); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", nil)
+}
