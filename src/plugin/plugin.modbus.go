@@ -231,9 +231,9 @@ func ModbusRtuGetData(result []byte, slave_id uint8, address uint16, endian stri
 					case MODBUS_DT_INT16:
 						value = float64(int16(uint16(_data_byte[0])*0x100 + uint16(_data_byte[1])))
 					case MODBUS_DT_UINT32:
-						value = float64(uint32(result[0])*0x1000000 + uint32(result[1])*0x10000 + uint32(result[2])*0x100 + uint32(result[3]))
+						value = float64(uint32(_data_byte[0])*0x1000000 + uint32(_data_byte[1])*0x10000 + uint32(_data_byte[2])*0x100 + uint32(_data_byte[3]))
 					case MODBUS_DT_INT32:
-						value = float64(int32(uint32(result[0])*0x1000000 + uint32(result[1])*0x10000 + uint32(result[2])*0x100 + uint32(result[3])))
+						value = float64(int32(uint32(_data_byte[0])*0x1000000 + uint32(_data_byte[1])*0x10000 + uint32(_data_byte[2])*0x100 + uint32(_data_byte[3])))
 					case MODBUS_DT_FLOAT:
 						value = float64(byte_to_float32(_data_byte))
 					}
