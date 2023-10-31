@@ -87,6 +87,8 @@ func DeleteModelAttributeHistory(influx *plugin.Influx, model_id string) (err er
 
 func (datas DeviceAttributeHistoryType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
 
+	defer utils.ErrorRecover("DeviceAttributeHistoryType")
+
 	batch := plugin.NewInfluxBatch(influx, "attribute_history")
 
 	for device_id, datas := range datas {
@@ -251,6 +253,8 @@ func DeleteModelEventHistory(influx *plugin.Influx, model_id string) (err error)
 }
 
 func (datas DeviceEventHistoryType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+
+	defer utils.ErrorRecover("DeviceEventHistoryType")
 
 	batch := plugin.NewInfluxBatch(influx, "event_history")
 
@@ -512,6 +516,8 @@ func DeleteModelEventRealtime(influx *plugin.Influx, model_id string) (err error
 }
 
 func (datas DeviceEventRealtimeType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+
+	defer utils.ErrorRecover("DeviceEventRealtimeType")
 
 	batch := plugin.NewInfluxBatch(influx, "event_realtime")
 
