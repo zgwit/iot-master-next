@@ -85,11 +85,11 @@ func DeleteModelAttributeHistory(influx *plugin.Influx, model_id string) (err er
 	return influx.DeleteByMeasurement("attribute_history", model_id)
 }
 
-func (datas *DeviceAttributeHistoryType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+func (datas DeviceAttributeHistoryType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
 
 	batch := plugin.NewInfluxBatch(influx, "attribute_history")
 
-	for device_id, datas := range *datas {
+	for device_id, datas := range datas {
 
 		for time, data := range datas {
 
@@ -250,11 +250,11 @@ func DeleteModelEventHistory(influx *plugin.Influx, model_id string) (err error)
 	return influx.DeleteByMeasurement("event_history", model_id)
 }
 
-func (datas *DeviceEventHistoryType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+func (datas DeviceEventHistoryType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
 
 	batch := plugin.NewInfluxBatch(influx, "event_history")
 
-	for device_id, datas := range *datas {
+	for device_id, datas := range datas {
 
 		for begin_time, data := range datas {
 
@@ -391,11 +391,13 @@ func DeleteModelAttributeRealtime(influx *plugin.Influx, model_id string) (err e
 	return influx.DeleteByMeasurement("attribute_realtime", model_id)
 }
 
-func (datas *DeviceAttributeRealtimeType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+func (datas DeviceAttributeRealtimeType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+
+	defer utils.ErrorRecover("DeviceAttributeRealtimeType")
 
 	batch := plugin.NewInfluxBatch(influx, "attribute_realtime")
 
-	for device_id, attriable_data := range *datas {
+	for device_id, attriable_data := range datas {
 
 		tags := map[string]string{":device_id": device_id}
 
@@ -424,7 +426,13 @@ func (datas *DeviceAttributeRealtimeType) Write(influx *plugin.Influx, model *De
 		batch.AddPoint(model.Id, tags, fields, 0)
 	}
 
-	return batch.Write()
+	err = batch.Write()
+
+	if err != nil {
+		fmt.Println("write err:", model.Id, err)
+	}
+
+	return
 }
 
 func (datas *DeviceAttributeRealtimeType) Read(influx *plugin.Influx, model_id string, device_ids []string) (err error) {
@@ -503,11 +511,11 @@ func DeleteModelEventRealtime(influx *plugin.Influx, model_id string) (err error
 	return influx.DeleteByMeasurement("event_realtime", model_id)
 }
 
-func (datas *DeviceEventRealtimeType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
+func (datas DeviceEventRealtimeType) Write(influx *plugin.Influx, model *DeviceModelType) (err error) {
 
 	batch := plugin.NewInfluxBatch(influx, "event_realtime")
 
-	for device_id, attriable_data := range *datas {
+	for device_id, attriable_data := range datas {
 
 		tags := map[string]string{":device_id": device_id}
 		fields := KeyValueType{}

@@ -2,6 +2,7 @@ package ctrler
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/zgwit/iot-master-next/src/model"
@@ -73,6 +74,8 @@ func (ctrler *DataCtrler) AttributeRead(data_str string) {
 		attriables model.KeyValueType
 		events     model.KeyValueBoolType
 	)
+
+	fmt.Println(data_str)
 
 	if err = json.Unmarshal([]byte(data_str), &attribute_write); err != nil {
 		return

@@ -30,7 +30,7 @@ var (
 	ctrler_device       ctrler.DeviceCtrler
 	ctrler_device_model ctrler.DeviceModelCtrler
 
-	info_disabled         = false
+	info_disabled         = true
 	info_ready_middleware = false
 )
 
