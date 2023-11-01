@@ -201,6 +201,7 @@ func (ctrler *DeviceModelCtrler) Update(ctx *gin.Context) {
 		return
 	}
 
+	table.Id = table_db.Id
 	table.Drive = table_db.Drive
 	table.Config = table_db.Config
 
