@@ -149,9 +149,9 @@ func (ctrler *DeviceCtrler) Create(ctx *gin.Context) {
 	plugin.HttpSuccess(ctx, "成功", nil)
 }
 
-func device_find(model_id string, table *model.DeviceType) (err error) {
+func device_find(id string, table *model.DeviceType) (err error) {
 
-	return utils.ReadFileToObject("./config/device/"+model_id+".txt", table)
+	return utils.ReadFileToObject("./config/device/"+id+".txt", table)
 }
 
 func (ctrler *DeviceCtrler) Find(ctx *gin.Context) {
@@ -225,17 +225,17 @@ func (ctrler *DeviceCtrler) Update(ctx *gin.Context) {
 func (ctrler *DeviceCtrler) Config(ctx *gin.Context) {
 
 	var (
-		model_id = ctx.Query("id")
+		id       = ctx.Query("id")
 		table    any
 		table_db = model.DeviceType{}
 	)
 
-	if err := ctx.Bind(&table); err != nil || model_id == "" {
+	if err := ctx.Bind(&table); err != nil || id == "" {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, nil)
 		return
 	}
 
-	if err := device_find(model_id, &table_db); err != nil {
+	if err := device_find(id, &table_db); err != nil {
 		plugin.HttpFailure(ctx, "机型不存在", plugin.REQUEST_FAIL, err)
 		return
 	}
