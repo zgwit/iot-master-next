@@ -608,3 +608,79 @@ func (datas *DeviceEventRealtimeType) Read(influx *plugin.Influx, model_id strin
 
 	return
 }
+
+// device_id.time
+type DeviceActivetimeType map[string]int64
+
+func (datas DeviceActivetimeType) Write(influx *plugin.Influx) (err error) {
+
+	defer utils.ErrorRecover("DeviceActivetimeType")
+
+	batch := plugin.NewInfluxBatch(influx, "activetime")
+
+	for device_id, activetime := range datas {
+
+		if activetime <= 0 || device_id == "" {
+			continue
+		}
+
+		tags := map[string]string{
+			":device_id": device_id,
+		}
+
+		fields := map[string]interface{}{
+			"value": activetime,
+		}
+
+		batch.AddPoint("device", tags, fields, 0)
+	}
+
+	return batch.Write()
+}
+
+func (datas *DeviceActivetimeType) Read(influx *plugin.Influx, device_ids []string) (err error) {
+
+	var (
+		query_data  = []map[string]interface{}{}
+		flux_string = ""
+	)
+
+	for idx, device_id := range device_ids {
+
+		if idx > 0 {
+			flux_string += "or "
+		}
+
+		flux_string += fmt.Sprintf(`r[":device_id"] == "%s" `, device_id)
+	}
+
+	cmd := fmt.Sprintf(`
+		from(bucket: "event_realtime")
+		|> range(start: 0)
+		|> filter(fn: (r) => { return %s })
+		|> drop(columns: ["_start", "_stop", "_measurement"])
+		|> yield()
+		`,
+		flux_string)
+
+	if query_data, err = influx.Query(cmd); err != nil {
+		return
+	}
+
+	for _, item := range query_data {
+
+		device_id, value, ok := "", int64(0), false
+
+		if device_id, ok = item[":device_id"].(string); !ok {
+			continue
+		}
+
+		if value, ok = item["_value"].(int64); !ok {
+			continue
+		}
+
+		(*datas)[device_id] = value
+	}
+
+	return
+}

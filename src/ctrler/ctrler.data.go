@@ -31,6 +31,10 @@ func (ctrler *DataCtrler) Init(influx *plugin.Influx, nsq_server *plugin.NsqServ
 		return
 	}
 
+	if err = nsq_server.Subscribe("activetime.write", ctrler.ActivetimeRead); err != nil {
+		return
+	}
+
 	if err = nsq_server.Subscribe("event.read", ctrler.EventRead); err != nil {
 		return
 	}
@@ -272,4 +276,18 @@ func (ctrler *DataCtrler) EventRead(message string) {
 	}
 
 	go event_history.Write(ctrler.Influx, &device_model)
+}
+
+func (ctrler *DataCtrler) ActivetimeRead(data_str string) {
+
+	var (
+		err               error
+		device_activetime = model.DeviceActivetimeType{}
+	)
+
+	if err = json.Unmarshal([]byte(data_str), &device_activetime); err != nil {
+		return
+	}
+
+	go device_activetime.Write(ctrler.Influx)
 }
