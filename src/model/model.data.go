@@ -654,14 +654,14 @@ func (datas *DeviceActivetimeType) Read(influx *plugin.Influx, device_ids []stri
 		flux_string += fmt.Sprintf(`r[":device_id"] == "%s" `, device_id)
 	}
 
-	if flux_string == "" {
-		flux_string = `true`
+	if len(device_ids) > 0 {
+		flux_string = `and (` + flux_string + `)`
 	}
 
 	cmd := fmt.Sprintf(`
-		from(bucket: "event_realtime")
+		from(bucket: "activetime")
 		|> range(start: 0)
-		|> filter(fn: (r) => { return %s })
+		|> filter(fn: (r) => { return r["_measurement"] == "device" %s })
 		|> drop(columns: ["_start", "_stop", "_measurement"])
 		|> yield()
 		`,
