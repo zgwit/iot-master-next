@@ -153,7 +153,6 @@ func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFu
 
 		default:
 			HttpFailure(ctx, "不支持的类型", REQUEST_FAIL, "Proxy仅支持：GET、POST、DELETE")
-			return
 		}
 	}
 }
