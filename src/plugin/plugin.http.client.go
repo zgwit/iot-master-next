@@ -116,14 +116,14 @@ func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFu
 		}
 
 		switch ctx.Request.Method {
+
 		case "GET":
+
 			if res, err := http_client.GET(url, query); err != nil {
 				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-				return
 
 			} else if res.Code != 200 {
 				HttpFailure(ctx, res.Msg, res.Code, res.Data)
-				return
 			}
 
 		case "POST":
@@ -137,21 +137,18 @@ func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFu
 
 			if res, err := http_client.POST(url, query, body); err != nil {
 				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-				return
 
 			} else if res.Code != 200 {
 				HttpFailure(ctx, res.Msg, res.Code, res.Data)
-				return
 			}
 
 		case "DELETE":
+
 			if res, err := http_client.DELETE(url, query); err != nil {
 				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-				return
 
 			} else if res.Code != 200 {
 				HttpFailure(ctx, res.Msg, res.Code, res.Data)
-				return
 			}
 
 		default:
