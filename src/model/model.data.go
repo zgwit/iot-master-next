@@ -654,6 +654,10 @@ func (datas *DeviceActivetimeType) Read(influx *plugin.Influx, device_ids []stri
 		flux_string += fmt.Sprintf(`r[":device_id"] == "%s" `, device_id)
 	}
 
+	if flux_string == "" {
+		flux_string = `true`
+	}
+
 	cmd := fmt.Sprintf(`
 		from(bucket: "event_realtime")
 		|> range(start: 0)
