@@ -11,3 +11,9 @@ type DeviceType struct {
 
 	Config interface{} `form:"config" bson:"config" json:"config"`
 }
+
+type DevciceByCreateTime []DeviceType
+
+func (a DevciceByCreateTime) Len() int           { return len(a) }
+func (a DevciceByCreateTime) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a DevciceByCreateTime) Less(i, j int) bool { return a[i].CreateTime > a[j].CreateTime }

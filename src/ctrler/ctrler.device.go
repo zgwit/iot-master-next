@@ -3,6 +3,7 @@ package ctrler
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/zgwit/iot-master-next/src/model"
@@ -92,6 +93,8 @@ func (ctrler *DeviceCtrler) List(ctx *gin.Context) {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}
+
+	sort.Sort(model.DevciceByCreateTime(devices))
 
 	plugin.HttpSuccess(ctx, "成功", devices)
 }

@@ -33,3 +33,9 @@ type DeviceModelActionType struct {
 	Name string `form:"name" bson:"name" json:"name"`
 	Id   string `form:"id" bson:"id" json:"id"`
 }
+
+type DeviceModelByCreateTime []DeviceModelType
+
+func (a DeviceModelByCreateTime) Len() int           { return len(a) }
+func (a DeviceModelByCreateTime) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a DeviceModelByCreateTime) Less(i, j int) bool { return a[i].CreateTime > a[j].CreateTime }
