@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"encoding/json"
-	"io"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
@@ -103,9 +102,9 @@ func (http_client *HttpClient) DELETE(url string, query HTTPQUERY) (response HTT
 	return
 }
 
-func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFunc {
+func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) {
 
-	query, body := HTTPQUERY{}, []byte{}
+	response, query, body, err := HTTPRESPONSE{}, HTTPQUERY{}, any(nil), any(nil)
 
 	for key, values := range ctx.Request.URL.Query() {
 		for _, value := range values {
@@ -113,20 +112,17 @@ func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFu
 		}
 	}
 
-	response, err := HTTPRESPONSE{}, interface{}(nil)
+	if err = ctx.Bind(&body); err != nil {
+		HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
+		return
+	}
 
 	switch ctx.Request.Method {
 
 	case "GET":
 		response, err = http_client.GET(url, query)
-
 	case "POST":
-		if body, err = io.ReadAll(ctx.Request.Body); err != nil {
-			break
-		}
-
 		response, err = http_client.POST(url, query, body)
-
 	case "DELETE":
 		response, err = http_client.DELETE(url, query)
 

@@ -2,6 +2,7 @@ package ctrler
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/zgwit/iot-master-next/src/model"
@@ -97,17 +98,25 @@ func (ctrler *DeviceCtrler) List(ctx *gin.Context) {
 
 func device_table(ctx *gin.Context, table *model.DeviceType) (result bool) {
 
+	fmt.Println("---------------------------- 1")
+
 	if err := ctx.Bind(table); err != nil {
 		return
 	}
+
+	fmt.Println("---------------------------- 2")
 
 	if len(table.Labels) == 0 {
 		table.Labels = []model.NameValueType{}
 	}
 
+	fmt.Println(utils.ToJson3(table))
+
 	if table.Name == "" || table.Id == "" || table.ModelId == "" {
 		return
 	}
+
+	fmt.Println("---------------------------- 3")
 
 	return true
 }
