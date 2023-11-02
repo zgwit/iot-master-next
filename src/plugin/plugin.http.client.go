@@ -107,7 +107,7 @@ func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFu
 
 	return func(ctx *gin.Context) {
 
-		query := HTTPQUERY{}
+		query, body := HTTPQUERY{}, []byte{}
 
 		for key, values := range ctx.Request.URL.Query() {
 			for _, value := range values {
@@ -115,44 +115,31 @@ func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFu
 			}
 		}
 
+		response, err := HTTPRESPONSE{}, interface{}(nil)
+
 		switch ctx.Request.Method {
 
 		case "GET":
-
-			if res, err := http_client.GET(url, query); err != nil {
-				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-
-			} else if res.Code != 200 {
-				HttpFailure(ctx, res.Msg, res.Code, res.Data)
-			}
+			response, err = http_client.GET(url, query)
 
 		case "POST":
-
-			body, err := io.ReadAll(ctx.Request.Body)
-
-			if err != nil {
-				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-				return
+			if body, err = io.ReadAll(ctx.Request.Body); err != nil {
+				break
 			}
 
-			if res, err := http_client.POST(url, query, body); err != nil {
-				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-
-			} else if res.Code != 200 {
-				HttpFailure(ctx, res.Msg, res.Code, res.Data)
-			}
+			response, err = http_client.POST(url, query, body)
 
 		case "DELETE":
-
-			if res, err := http_client.DELETE(url, query); err != nil {
-				HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-
-			} else if res.Code != 200 {
-				HttpFailure(ctx, res.Msg, res.Code, res.Data)
-			}
+			response, err = http_client.DELETE(url, query)
 
 		default:
 			HttpFailure(ctx, "不支持的类型", REQUEST_FAIL, "Proxy仅支持：GET、POST、DELETE")
 		}
+
+		if err != nil {
+			HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
+		}
+
+		HttpDefault(ctx, response.Msg, response.Code, response.Data)
 	}
 }

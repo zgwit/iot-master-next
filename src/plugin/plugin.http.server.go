@@ -75,6 +75,15 @@ func (http_server *HttpServer) Running() (err error) {
 	return http_server.Router.Run(http_server.Config.Url)
 }
 
+func HttpDefault(ctx *gin.Context, msg string, code int, data interface{}) {
+
+	ctx.JSON(http.StatusOK, map[string]interface{}{
+		"msg":  msg,
+		"code": code,
+		"data": data,
+	})
+}
+
 func HttpFailure(ctx *gin.Context, msg string, code int, data interface{}) {
 
 	message := map[string]interface{}{
