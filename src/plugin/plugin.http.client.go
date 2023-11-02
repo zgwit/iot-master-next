@@ -105,41 +105,38 @@ func (http_client *HttpClient) DELETE(url string, query HTTPQUERY) (response HTT
 
 func (http_client *HttpClient) PROXY(ctx *gin.Context, url string) gin.HandlerFunc {
 
-	return func(ctx *gin.Context) {
+	query, body := HTTPQUERY{}, []byte{}
 
-		query, body := HTTPQUERY{}, []byte{}
-
-		for key, values := range ctx.Request.URL.Query() {
-			for _, value := range values {
-				query[key] = value
-			}
+	for key, values := range ctx.Request.URL.Query() {
+		for _, value := range values {
+			query[key] = value
 		}
-
-		response, err := HTTPRESPONSE{}, interface{}(nil)
-
-		switch ctx.Request.Method {
-
-		case "GET":
-			response, err = http_client.GET(url, query)
-
-		case "POST":
-			if body, err = io.ReadAll(ctx.Request.Body); err != nil {
-				break
-			}
-
-			response, err = http_client.POST(url, query, body)
-
-		case "DELETE":
-			response, err = http_client.DELETE(url, query)
-
-		default:
-			HttpFailure(ctx, "不支持的类型", REQUEST_FAIL, "Proxy仅支持：GET、POST、DELETE")
-		}
-
-		if err != nil {
-			HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
-		}
-
-		HttpDefault(ctx, response.Msg, response.Code, response.Data)
 	}
+
+	response, err := HTTPRESPONSE{}, interface{}(nil)
+
+	switch ctx.Request.Method {
+
+	case "GET":
+		response, err = http_client.GET(url, query)
+
+	case "POST":
+		if body, err = io.ReadAll(ctx.Request.Body); err != nil {
+			break
+		}
+
+		response, err = http_client.POST(url, query, body)
+
+	case "DELETE":
+		response, err = http_client.DELETE(url, query)
+
+	default:
+		HttpFailure(ctx, "不支持的类型", REQUEST_FAIL, "Proxy仅支持：GET、POST、DELETE")
+	}
+
+	if err != nil {
+		HttpFailure(ctx, "请求失败，请稍后重试", REQUEST_SERVER_ERR, err)
+	}
+
+	HttpDefault(ctx, response.Msg, response.Code, response.Data)
 }
