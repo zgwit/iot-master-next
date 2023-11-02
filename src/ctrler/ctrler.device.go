@@ -429,3 +429,15 @@ func (ctrler *DeviceCtrler) EventHistoryDelete(ctx *gin.Context) {
 
 	plugin.HttpSuccess(ctx, "成功", nil)
 }
+
+func (ctrler *DeviceCtrler) Activetime(ctx *gin.Context) {
+
+	device_activetime := model.DeviceActivetimeType{}
+
+	if err := device_activetime.Read(ctrler.Influx, []string{}); err != nil {
+		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
+		return
+	}
+
+	plugin.HttpSuccess(ctx, "成功", device_activetime)
+}

@@ -188,6 +188,8 @@ func system_init() {
 				EVENT.DELETE("/realtime/delete", ctrler_device.EventRealtimeDelete)
 				EVENT.DELETE("/history/delete", ctrler_device.EventHistoryDelete)
 			}
+
+			DEVICE.GET("/activetime", ctrler_device.Activetime)
 		}
 	}
 
