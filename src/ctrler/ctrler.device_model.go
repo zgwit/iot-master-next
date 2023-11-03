@@ -3,6 +3,7 @@ package ctrler
 import (
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/zgwit/iot-master-next/src/model"
 	"github.com/zgwit/iot-master-next/src/plugin"
@@ -154,6 +155,7 @@ func (ctrler *DeviceModelCtrler) Create(ctx *gin.Context) {
 		return
 	}
 
+	table.CreateTime = time.Now().Unix()
 	table.Config = nil
 
 	if err := device_model_write(&table); err != nil {
@@ -204,6 +206,7 @@ func (ctrler *DeviceModelCtrler) Update(ctx *gin.Context) {
 		return
 	}
 
+	table.CreateTime = table_db.CreateTime
 	table.Id = table_db.Id
 	table.Drive = table_db.Drive
 	table.Config = table_db.Config

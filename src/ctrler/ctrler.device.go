@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/zgwit/iot-master-next/src/model"
 	"github.com/zgwit/iot-master-next/src/plugin"
@@ -151,6 +152,7 @@ func (ctrler *DeviceCtrler) Create(ctx *gin.Context) {
 		return
 	}
 
+	table.CreateTime = time.Now().Unix()
 	table.Config = nil
 
 	if err := device_write(&table); err != nil {
@@ -223,6 +225,7 @@ func (ctrler *DeviceCtrler) Update(ctx *gin.Context) {
 		return
 	}
 
+	table.CreateTime = table_db.CreateTime
 	table_db.Name = table.Name
 	table_db.Labels = table.Labels
 
