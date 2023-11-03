@@ -432,10 +432,6 @@ func (datas DeviceAttributeRealtimeType) Write(influx *plugin.Influx, model *Dev
 
 	err = batch.Write()
 
-	if err != nil {
-		fmt.Println("write err:", model.Id, err)
-	}
-
 	return
 }
 
