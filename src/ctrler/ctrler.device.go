@@ -2,7 +2,6 @@ package ctrler
 
 import (
 	"encoding/json"
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -109,8 +108,6 @@ func device_table(ctx *gin.Context, table *model.DeviceType) (result bool) {
 	if len(table.Labels) == 0 {
 		table.Labels = []model.NameValueType{}
 	}
-
-	fmt.Println(utils.ToJson3(table))
 
 	if table.Name == "" || table.Id == "" || table.ModelId == "" {
 		return
@@ -262,18 +259,16 @@ func (ctrler *DeviceCtrler) Config(ctx *gin.Context) {
 func (ctrler *DeviceCtrler) AttributeRealtime(ctx *gin.Context) {
 
 	var (
-		model_id   = ctx.Query("model_id")
-		device_ids = []string{}
-
-		datas = model.DeviceAttributeRealtimeType{}
+		filter = model.DataFilterType{}
+		datas  = model.DeviceAttributeRealtimeType{}
 	)
 
-	if err := json.Unmarshal([]byte(ctx.Query("device_ids")), &device_ids); model_id == "" || err != nil {
+	if err := json.Unmarshal([]byte(ctx.Query("filter")), &filter); err != nil {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
 		return
 	}
 
-	if err := datas.Read(ctrler.Influx, model_id, device_ids); err != nil {
+	if err := datas.Read(ctrler.Influx, filter); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}
@@ -284,20 +279,13 @@ func (ctrler *DeviceCtrler) AttributeRealtime(ctx *gin.Context) {
 func (ctrler *DeviceCtrler) AttributeHistory(ctx *gin.Context) {
 
 	var (
-		model_id      = ctx.Query("model_id")
-		device_ids    = []string{}
-		attribute_ids = []string{}
-		page          = model.PageType{}
+		filter = model.DataFilterType{}
+		page   = model.PageType{}
 
 		datas = model.DeviceAttributeHistoryType{}
 	)
 
-	if err := json.Unmarshal([]byte(ctx.Query("device_ids")), &device_ids); model_id == "" || err != nil {
-		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
-		return
-	}
-
-	if err := json.Unmarshal([]byte(ctx.Query("attribute_ids")), &attribute_ids); model_id == "" || err != nil {
+	if err := json.Unmarshal([]byte(ctx.Query("filter")), &filter); err != nil {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
 		return
 	}
@@ -307,7 +295,7 @@ func (ctrler *DeviceCtrler) AttributeHistory(ctx *gin.Context) {
 		return
 	}
 
-	if err := datas.Read(ctrler.Influx, model_id, device_ids, attribute_ids, page); err != nil {
+	if err := datas.Read(ctrler.Influx, filter, page); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}
@@ -352,18 +340,16 @@ func (ctrler *DeviceCtrler) AttributeHistoryDelete(ctx *gin.Context) {
 func (ctrler *DeviceCtrler) EventRealtime(ctx *gin.Context) {
 
 	var (
-		model_id   = ctx.Query("model_id")
-		device_ids = []string{}
-
-		datas = model.DeviceEventRealtimeType{}
+		filter = model.DataFilterType{}
+		datas  = model.DeviceEventRealtimeType{}
 	)
 
-	if err := json.Unmarshal([]byte(ctx.Query("device_ids")), &device_ids); model_id == "" || err != nil {
+	if err := json.Unmarshal([]byte(ctx.Query("filter")), &filter); err != nil {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
 		return
 	}
 
-	if err := datas.Read(ctrler.Influx, model_id, device_ids); err != nil {
+	if err := datas.Read(ctrler.Influx, filter); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}
@@ -374,30 +360,23 @@ func (ctrler *DeviceCtrler) EventRealtime(ctx *gin.Context) {
 func (ctrler *DeviceCtrler) EventHistory(ctx *gin.Context) {
 
 	var (
-		model_id   = ctx.Query("model_id")
-		device_ids = []string{}
-		event_ids  = []string{}
-		page       = model.PageType{}
+		filter = model.DataFilterType{}
+		page   = model.PageType{}
 
 		datas = model.DeviceEventHistoryType{}
 	)
 
-	if err := json.Unmarshal([]byte(ctx.Query("event_ids")), &event_ids); model_id == "" || err != nil {
+	if err := json.Unmarshal([]byte(ctx.Query("filter")), &filter); err != nil {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
 		return
 	}
 
-	if err := json.Unmarshal([]byte(ctx.Query("event_ids")), &event_ids); model_id == "" || err != nil {
+	if err := ctx.BindQuery(&page); err != nil {
 		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
 		return
 	}
 
-	if err := ctx.BindQuery(&page); err != nil || page.Size <= 0 || page.Offset <= 0 {
-		plugin.HttpFailure(ctx, "参数格式错误", plugin.REQUEST_QUERY_ERR, err)
-		return
-	}
-
-	if err := datas.Read(ctrler.Influx, model_id, device_ids, event_ids, page); err != nil {
+	if err := datas.Read(ctrler.Influx, filter, page); err != nil {
 		plugin.HttpFailure(ctx, "请求失败，请稍后重试", plugin.REQUEST_SERVER_ERR, err)
 		return
 	}

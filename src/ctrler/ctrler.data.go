@@ -123,8 +123,6 @@ func (ctrler *DataCtrler) AttriableWrite() {
 
 	var (
 		ticker = time.NewTicker(200 * time.Millisecond)
-
-		device_model model.DeviceModelType
 	)
 
 	for range ticker.C {
@@ -133,7 +131,9 @@ func (ctrler *DataCtrler) AttriableWrite() {
 
 		for model_id, model_data := range ctrler.history {
 
-			if err := device_model_find(model_id, &device_model); err != nil {
+			device_model := &model.DeviceModelType{}
+
+			if err := device_model_find(model_id, device_model); err != nil {
 				return
 			}
 
@@ -159,8 +159,8 @@ func (ctrler *DataCtrler) AttriableWrite() {
 					}
 				}
 
-				go realtime.Write(ctrler.Influx, &device_model)
-				go model_data.Write(ctrler.Influx, &device_model)
+				go realtime.Write(ctrler.Influx, device_model)
+				go model_data.Write(ctrler.Influx, device_model)
 
 				ctrler.history[model_id] = model.DeviceAttributeHistoryType{}
 			}
@@ -199,7 +199,7 @@ func (ctrler *DataCtrler) EventWrite(time int64, device_model *model.DeviceModel
 
 	event_datas_cache := model.DeviceEventRealtimeType{}
 
-	if err := event_datas_cache.Read(ctrler.Influx, device_model.Id, []string{device_id}); err != nil {
+	if err := event_datas_cache.Read(ctrler.Influx, model.DataFilterType{device_model.Id: {device_id: {"": true}}}); err != nil {
 		return
 	}
 

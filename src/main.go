@@ -30,7 +30,7 @@ var (
 	ctrler_device       ctrler.DeviceCtrler
 	ctrler_device_model ctrler.DeviceModelCtrler
 
-	info_disabled         = false
+	info_enable           = true
 	info_ready_middleware = false
 )
 
@@ -83,6 +83,8 @@ func application_init() {
 }
 
 func system_init() {
+
+	utils.ReadFilekeyToObject("./config.txt", "info_enable", &info_enable)
 
 	var influx_config plugin.InfluxConfig
 
@@ -226,16 +228,16 @@ func ctrler_init() {
 
 func system_info() {
 
-	if info_disabled {
-		log.Println("successfully started.")
-	} else {
+	if info_enable {
 		log.Println("waiting for the system to start.")
+	} else {
+		log.Println("successfully started.")
 	}
 
 	for {
 		time.Sleep(time.Second)
 
-		if info_disabled {
+		if !info_enable {
 			return
 		}
 
@@ -276,7 +278,7 @@ func system_loop() {
 
 func system_fail() {
 
-	info_disabled = true
+	info_enable = false
 
 	log.Println("failed to start, press any key to exit.")
 	fmt.Scanf("\n")
